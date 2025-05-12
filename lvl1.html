@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>VR Door Game - Level 1 (Enhanced)</title>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-event-set-component@5.0.0/dist/aframe-event-set-component.min.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        font-family: 'Segoe UI', sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <a-scene background="color: #133337" fog="type: exponential; color: #6897bb; density: 0.05">
+
+      <!-- Lighting -->
+      <a-light type="ambient" color="#00ffff"></a-light>
+      <a-light type="point" intensity="1.5" position="2 5 2"></a-light>
+
+      <!-- Ground -->
+      <a-plane position="0 0 -4" rotation="-90 0 0" width="20" height="20" color="#003366" shadow="receive: true"></a-plane>
+
+      <!-- Camera -->
+      <a-entity position="0 1.6 4">
+        <a-camera>
+          <a-cursor fuse="false" rayOrigin="mouse" material="color: cyan; shader: flat" position="0 0 -1"></a-cursor>
+        </a-camera>
+      </a-entity>
+
+      <!-- Fancy Door -->
+      <a-box id="door"
+             position="0 1 -4"
+             width="3" height="7.5" depth="0.1"
+             material="src: url(image.png); roughness: 0.3; metalness: 0.6"
+             animation__open="property: rotation; to: 0 90 0; dur: 1500; startEvents: openDoor; easing: easeOutElastic">
+      </a-box>
+
+      <!-- Sparkling Orb Button -->
+      <a-sphere id="button"
+                class="clickable"
+                position="0 0.6 -2"
+                radius="0.25"
+                color="#00E676"
+                animation="property: scale; dir: alternate; dur: 1000; loop: true; to: 1.2 1.2 1.2">
+      </a-sphere>
+      <a-text value="Нээх" color="#fff" align="center" position="0 1 -2" width="2"></a-text>
+
+      <!-- Glow effect -->
+      <a-ring position="0 0.05 -2" rotation="-90 0 0" radius-inner="0.3" radius-outer="0.35" color="#0f0" opacity="0.4"></a-ring>
+
+      <!-- Next and Again Buttons (Initially Hidden) -->
+      <a-plane id="nextBtn" visible="false" position="1 0.3 -2" width="1.2" height="0.4" color="#1E88E5" class="clickable">
+        <a-text value="Next" color="black" align="center" width="4" position="0 0 0"></a-text>
+      </a-plane>
+
+      <a-plane id="againBtn" visible="false" position="-1 0.3 -2" width="1.2" height="0.4" color="#F4511E" class="clickable">
+        <a-text value="Play Again" color="black" align="center" width="4" position="0 0 0"></a-text>
+      </a-plane>
+
+      <!-- Instruction -->
+      <a-text value="Unlock the magical door." color="#ccc" position="-3 2 -2" width="7"></a-text>
+
+    </a-scene>
+
+    <script>
+      const door = document.querySelector('#door');
+      const button = document.querySelector('#button');
+      const nextBtn = document.querySelector('#nextBtn');
+      const againBtn = document.querySelector('#againBtn');
+
+      button.addEventListener('click', () => {
+        door.emit('openDoor');
+        button.setAttribute('visible', 'false');
+        setTimeout(() => {
+          nextBtn.setAttribute('visible', 'true');
+          againBtn.setAttribute('visible', 'true');
+        }, 1600);
+      });
+
+      nextBtn.addEventListener('click', () => {
+        window.location.href = 'lvl2.html';
+      });
+
+      againBtn.addEventListener('click', () => {
+        location.reload();
+      });
+    </script>
+  </body>
+</html>

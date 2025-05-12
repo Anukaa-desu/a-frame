@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>VR Door Game - Level 2</title>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-event-set-component@5.0.0/dist/aframe-event-set-component.min.js"></script>
+    <style>
+      html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: sans-serif; }
+    </style>
+  </head>
+  <body>
+    <a-scene background="color: #111" fog="type: exponential; color: #111; density: 0.04">
+
+      <!-- Lighting -->
+      <a-light type="ambient" color="#999"></a-light>
+      <a-light type="spot" position="0 5 -3" angle="45" intensity="1.5" target="#door"></a-light>
+
+      <!-- Floor -->
+      <a-plane rotation="-90 0 0" width="20" height="20" color="#222"></a-plane>
+
+      <!-- Camera -->
+      <a-entity position="0 1.6 4">
+        <a-camera>
+          <a-cursor fuse="false" rayOrigin="mouse" material="color: cyan; shader: flat" position="0 0 -1"></a-cursor>
+        </a-camera>
+      </a-entity>
+
+      <!-- Door -->
+      <a-box id="door" position="0 1 -4" width="2" height="4.5" depth="0.1" color="#795548"
+             animation__open="property: rotation; to: 0 90 0; dur: 1000; startEvents: openDoor; easing: easeInOutSine">
+      </a-box>
+
+      <!-- Instruction Text -->
+      <a-text value="Press buttons in the correct sequence:" color="#fff" position="-2.5 2 -2" width="6"></a-text>
+
+      <!-- Buttons -->
+      <a-cylinder id="btn1" class="seqbtn" position="-1 0.3 -2" radius="0.3" height="0.1" color="#FF9800"
+                  event-set__enter="_event: mouseenter; scale: 1.2 1.2 1"
+                  event-set__leave="_event: mouseleave; scale: 1 1 1">
+        <a-text value="1" align="center" color="#fff" position="0 0.1 0" width="2"></a-text>
+      </a-cylinder>
+      <a-cylinder id="btn2" class="seqbtn" position="0 0.3 -2" radius="0.3" height="0.1" color="#03A9F4"
+                  event-set__enter="_event: mouseenter; scale: 1.2 1.2 1"
+                  event-set__leave="_event: mouseleave; scale: 1 1 1">
+        <a-text value="2" align="center" color="#fff" position="0 0.1 0" width="2"></a-text>
+      </a-cylinder>
+      <a-cylinder id="btn3" class="seqbtn" position="1 0.3 -2" radius="0.3" height="0.1" color="#4CAF50"
+                  event-set__enter="_event: mouseenter; scale: 1.2 1.2 1"
+                  event-set__leave="_event: mouseleave; scale: 1 1 1">
+        <a-text value="3" align="center" color="#fff" position="0 0.1 0" width="2"></a-text>
+      </a-cylinder>
+
+      <!-- Message Text -->
+      <a-text value="Unlock sequence: ???" color="#fff" id="msg" position="-1.5 1.5 -2" width="4"></a-text>
+
+      <!-- Buttons for Next and Play Again -->
+      <a-plane id="playAgainBtn" visible="false" position="-1 0.3 -1" width="1.2" height="0.4" color="#f44336" class="clickable">
+        <a-text value="Play Again" align="center" color="black" width="4" position="0 0 0"></a-text>
+      </a-plane>
+
+      <a-plane id="nextBtn" visible="false" position="1 0.3 -1" width="1.2" height="0.4" color="#4CAF50" class="clickable">
+        <a-text value="Next" align="center" color="black" width="4" position="0 0 0"></a-text>
+      </a-plane>
+
+    </a-scene>
+
+    <script>
+      const correctSequence = ['btn2', 'btn1', 'btn3'];
+      const clickedSequence = [];
+      const buttons = document.querySelectorAll('.seqbtn');
+      const msg = document.querySelector('#msg');
+      const door = document.querySelector('#door');
+      const playAgainBtn = document.querySelector('#playAgainBtn');
+      const nextBtn = document.querySelector('#nextBtn');
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          clickedSequence.push(btn.id);
+          btn.setAttribute('color', '#AAA');
+
+          if (clickedSequence.length === 3) {
+            if (JSON.stringify(clickedSequence) === JSON.stringify(correctSequence)) {
+              msg.setAttribute('value', 'Door unlocked!');
+              door.emit('openDoor');
+              setTimeout(() => {
+                playAgainBtn.setAttribute('visible', true);
+                nextBtn.setAttribute('visible', true);
+              }, 1000);
+            } else {
+              msg.setAttribute('value', 'Wrong sequence! Try again...');
+              setTimeout(() => { location.reload(); }, 1500);
+            }
+          }
+        });
+      });
+
+      playAgainBtn.addEventListener('click', () => location.reload());
+      nextBtn.addEventListener('click', () => window.location.href = 'lvl4.html');
+    </script>
+  </body>
+</html>
