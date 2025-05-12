@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>VR Door Game - Level 3</title>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        font-family: 'Segoe UI', sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <a-scene background="color: #101010" fog="type: exponential; color: #101010; density: 0.04">
+
+      <!-- Lights -->
+      <a-light type="ambient" color="#666"></a-light>
+      <a-light type="spot" intensity="1.2" angle="45" penumbra="1" position="0 6 2" target="#puzzle"></a-light>
+
+      <!-- Camera -->
+      <a-entity position="0 1.6 5">
+        <a-camera>
+          <a-cursor fuse="false" rayOrigin="mouse" material="color: yellow; shader: flat" position="0 0 -1"></a-cursor>
+        </a-camera>
+      </a-entity>
+
+      <!-- Ground -->
+      <a-plane rotation="-90 0 0" width="20" height="20" color="#222"></a-plane>
+
+      <!-- Puzzle Prompt -->
+      <a-text id="prompt" value="One box is heavier. Click to find it. You have 2 tries." position="-3 2 -3" width="6" color="#fff"></a-text>
+
+      <!-- Puzzle Boxes -->
+      <a-box id="box1" class="guessbox" position="-2 0.5 -3" width="0.6" height="0.6" depth="0.6" color="#B39DDB"></a-box>
+      <a-box id="box2" class="guessbox" position="0 0.5 -3" width="0.6" height="0.6" depth="0.6" color="#90CAF9"></a-box>
+      <a-box id="box3" class="guessbox" position="2 0.5 -3" width="0.6" height="0.6" depth="0.6" color="#A5D6A7"></a-box>
+
+      <!-- Hidden Door -->
+      <a-box id="door" position="0 1 -6" width="1.5" height="5.5" depth="0.1" color="#9C27B0" visible="false"
+             animation__open="property: rotation; to: 0 90 0; dur: 1000; startEvents: openDoor; easing: easeOutElastic">
+      </a-box>
+
+      <!-- Buttons -->
+      <a-plane id="nextBtn" visible="false" position="0.8 0.3 -2" width="1.2" height="0.4" color="#00BCD4" class="clickable">
+        <a-text value="Next" align="center" color="#fff" width="4" position="0 0 0"></a-text>
+      </a-plane>
+      <a-plane id="againBtn" visible="false" position="-0.8 0.3 -2" width="1.2" height="0.4" color="#FF5722" class="clickable">
+        <a-text value="Play Again" align="center" color="#fff" width="4" position="0 0 0"></a-text>
+      </a-plane>
+
+    </a-scene>
+
+    <script>
+      const boxes = document.querySelectorAll('.guessbox');
+      const prompt = document.querySelector('#prompt');
+      const door = document.querySelector('#door');
+      const nextBtn = document.querySelector('#nextBtn');
+      const againBtn = document.querySelector('#againBtn');
+      const heavyBox = 'box2';
+      let attempts = 2;
+
+      boxes.forEach(box => {
+        box.addEventListener('click', () => {
+          if (attempts <= 0) return;
+
+          if (box.id === heavyBox) {
+            prompt.setAttribute('value', 'Correct! The door is opening...');
+            door.setAttribute('visible', 'true');
+            door.emit('openDoor');
+            setTimeout(() => {
+              nextBtn.setAttribute('visible', 'true');
+              againBtn.setAttribute('visible', 'true');
+            }, 1000);
+          } else {
+            attempts--;
+            if (attempts > 0) {
+              prompt.setAttribute('value', `Not quite! You have ${attempts} try left.`);
+              box.setAttribute('color', '#444');
+            } else {
+              prompt.setAttribute('value', 'No tries left! Restarting...');
+              setTimeout(() => location.reload(), 1500);
+            }
+          }
+        });
+      });
+
+      nextBtn.addEventListener('click', () => window.location.href = 'lvl4.html');
+      againBtn.addEventListener('click', () => location.reload());
+    </script>
+  </body>
+</html>
